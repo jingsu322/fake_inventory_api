@@ -36,6 +36,10 @@ class Inventory(db.Model):
 with app.app_context():
     db.create_all()
 
+@app.route('/')
+def home():
+    return jsonify({"message": "This is a fake inventory API"})
+
 @app.route('/inventory/batch', methods=['POST'])
 def batch_add_inventory():
     data = request.get_json()
