@@ -68,7 +68,7 @@ def batch_add_inventory():
                 url_key=item.get("Url Key"),
                 available_qty=item.get("Available Qty"),
                 product_url=item.get("Product URL"),
-                price_info=item.get("Price Info")
+                price_info=item.get("Price Info"),
                 phone=item.get("Phone"),
                 street_address=item.get("Street Address"),
                 country=item.get("Country"),
