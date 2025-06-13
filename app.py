@@ -2,9 +2,10 @@ from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///fake_inventory.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///fake_inventory.db"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
+
 
 # Updated model
 class Inventory(db.Model):
@@ -40,17 +41,20 @@ class Inventory(db.Model):
             "street_address": self.street_address,
             "country": self.country,
             "state": self.state,
-            "email": self.email
+            "email": self.email,
         }
+
 
 with app.app_context():
     db.create_all()
 
-@app.route('/')
+
+@app.route("/")
 def home():
     return jsonify({"message": "This is a fake inventory API"})
 
-@app.route('/inventory/batch', methods=['POST'])
+
+@app.route("/inventory/batch", methods=["POST"])
 def batch_add_inventory():
     data = request.get_json()
     if not isinstance(data, list):
@@ -73,7 +77,7 @@ def batch_add_inventory():
                 street_address=item.get("Street Address"),
                 country=item.get("Country"),
                 state=item.get("State"),
-                email=item.get("Email")
+                email=item.get("Email"),
             )
             new_items.append(new_item)
         except Exception as e:
@@ -83,10 +87,47 @@ def batch_add_inventory():
     db.session.commit()
     return jsonify({"message": f"{len(new_items)} items added"}), 201
 
-@app.route('/inventory', methods=['GET'])
+
+@app.route("/inventory", methods=["POST"])
+def add_inventory():
+    item = request.get_json()
+    if not isinstance(item, dict):
+        return (
+            jsonify({"error": "Expected a JSON object for a single inventory item"}),
+            400,
+        )
+
+    try:
+        new_item = Inventory(
+            sku=item.get("Sku"),
+            name=item.get("Name"),
+            product_name=item.get("Product Name"),
+            factory_name=item.get("Factory Name"),
+            seller_name=item.get("Seller Name"),
+            url_key=item.get("Url Key"),
+            available_qty=item.get("Available Qty"),
+            product_url=item.get("Product URL"),
+            price_info=item.get("Price Info"),
+            phone=item.get("Phone"),
+            street_address=item.get("Street Address"),
+            country=item.get("Country"),
+            state=item.get("State"),
+            email=item.get("Email"),
+        )
+        db.session.add(new_item)
+        db.session.commit()
+        return (
+            jsonify({"message": "Item added successfully", "item": new_item.to_dict()}),
+            201,
+        )
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+
+@app.route("/inventory", methods=["GET"])
 def get_inventories():
-    sku  = request.args.get('sku')
-    name = request.args.get('product_name')
+    sku = request.args.get("sku")
+    name = request.args.get("product_name")
 
     query = Inventory.query
     if sku:
@@ -147,5 +188,5 @@ def get_inventories():
 #     else:
 #         return jsonify({"error": "Inventory not found"}), 404
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(debug=True)
