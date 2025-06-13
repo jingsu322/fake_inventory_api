@@ -18,6 +18,11 @@ class Inventory(db.Model):
     available_qty = db.Column(db.Float)
     product_url = db.Column(db.String(255))
     price_info = db.Column(db.Text)
+    phone = db.Column(db.String(20))
+    street_address = db.Column(db.String(255))
+    country = db.Column(db.String(50))
+    state = db.Column(db.String(50))
+    email = db.Column(db.String(255))
 
     def to_dict(self):
         return {
@@ -30,7 +35,12 @@ class Inventory(db.Model):
             "url_key": self.url_key,
             "available_qty": self.available_qty,
             "product_url": self.product_url,
-            "price_info": self.price_info
+            "price_info": self.price_info,
+            "phone": self.phone,
+            "street_address": self.street_address,
+            "country": self.country,
+            "state": self.state,
+            "email": self.email
         }
 
 with app.app_context():
@@ -59,6 +69,11 @@ def batch_add_inventory():
                 available_qty=item.get("Available Qty"),
                 product_url=item.get("Product URL"),
                 price_info=item.get("Price Info")
+                phone=item.get("Phone"),
+                street_address=item.get("Street Address"),
+                country=item.get("Country"),
+                state=item.get("State"),
+                email=item.get("Email")
             )
             new_items.append(new_item)
         except Exception as e:
